@@ -190,33 +190,47 @@ def finalStringGenarator(minterm,binaryList):
 def Essential_prime_implicants(list,binaryList):
     grid=[]
     del_cols=[]
+    essi_pi=[]
     for i in range(len(list)):
         minterms=list[i]['Minterms']
         grid=list[i]['Grid']
         for i in range(len(minterms)):
             grid[minterms[i]]=1;
     ########### List ##########
-    finalAns=''
     for i in range(len(grid)):
         couOne=[]
         for j in range (len(list)):
             if(list[j]['Grid'][i]==1):couOne.append(j)
-        
+        finalAns=''
         if(len(couOne)==1): #This is a Essential Prime Implicant
-            finalAns+=finalStringGenarator(list[couOne[0]]['Minterms'],binaryList)+'+'   
-            if(del_cols.count(couOne) == 0):del_cols.append(couOne) 
-    if finalAns.endswith('+'):
-        finalAns = finalAns[:-1]   
+            finalAns=finalStringGenarator(list[couOne[0]]['Minterms'],binaryList) 
+            if(essi_pi.count(finalAns)==0):essi_pi.append(finalAns)  
+            if(del_cols.count(couOne) == 0):del_cols.append(couOne)
+            
+    final=''
+    for i in range (len(essi_pi)):
+                 final+=essi_pi[i]+'+'
+    if final.endswith('+'):
+        final = final[:-1]   
         
         
-    return finalAns,del_cols;     
+    return final,del_cols;     
 
                                             #Main code for Exicution#
                                             
                                             
 
-minterms=[1,2,3,5,7,8,9,12,14]
+minterms=[1,2,3,5,7,8,9]
+dont_cares=[12,14]
+'''minterms=[4,5,6,13,14,15]
+dont_cares=[8,9,10]'''
 
+
+
+print("Minterms->",str(minterms).ljust(5)+"     "+"DONT'CARES->",str(dont_cares).ljust(5))
+minterms=minterms+dont_cares
+
+minterms.sort()
 #minterms=[2,3,4,5,6,7,9,10,11,13,14,15]
 #minterms=[4,5,6,8,9,10,13,14,15]
 
@@ -225,13 +239,9 @@ a=0
 #a=int(input("Give the number of minterms ->"))
 
 #minterms = list(map(int, input("Enter the minterms separated by space: ").split()))
-print(minterms)
 max_len=0
 list_min_binary=[]
 max_len = len(decimal_to_binary(max(minterms)))
-print(max(minterms))
-print(max_len)
-
 for x in minterms:
     
     binary = decimal_to_binary(x)# Convert the decimal number to binary
@@ -310,11 +320,17 @@ final_grid_dic=[]
 
 for i in range(len(list)):
     arr=np.zeros((max_num+1),dtype=int)
-    minterms=list[i]['minterm'];
-    row={"Minterms":minterms,
-         "Grid":arr,}
-    final_grid_dic.append(row)
+    minterms=list[i]['minterm']
+    if (len(dont_cares)!=0):
+        for i in range(len(dont_cares)):
+            if(minterms.count(dont_cares[i])!=0):
+                minterms.remove(dont_cares[i])
+    if(len(minterms)!=0):            
+        row={"Minterms":minterms,
+            "Grid":arr,}
+        final_grid_dic.append(row)
 print("------------------------------->>>>>")
+
 
 epi,del_col=Essential_prime_implicants(final_grid_dic,list)
 
@@ -327,13 +343,16 @@ grid_column_width = max_grid_length + 5
 for i in range(len(final_grid_dic)):
     print(f"MINTERMS: {str(final_grid_dic[i]['Minterms']).ljust(minterms_column_width)} GRID-> {str(final_grid_dic[i]['Grid']).ljust(grid_column_width)}")
     
-'''print(del_col)
-if(len(del_col)!=0):
-    for i in range(len(del_col)):
-        final_grid_dic.pop(del_col[i][0])'''
+
+#####Fill the remaining prime implicants with all zeroes####
+for i in range(len(del_col)):
+    arr=final_grid_dic[del_col[i][0]]['Grid']
+    arr.fill(0)
     
+        
 print("--------------------------------------------------")
-
-print("The essential prime Implicants are->",epi) 
-
-
+if(len(epi)!=0):
+    print("The essential prime Implicants are->",epi) 
+else:
+    print("No essential prime Implicants Exists.",epi) 
+ 
