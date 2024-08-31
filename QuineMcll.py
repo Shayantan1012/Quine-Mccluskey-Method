@@ -297,12 +297,12 @@ def RowDominance(final_grid):
                                             
                                             
 
-minterms=[1,2,3,5,7,8,9]
-dont_cares=[12,14]
+#minterms=[1,2,3,5,7,8,9]
+#dont_cares=[12,14]
 #minterms=[4,5,6,13,14,15]
-#minterms=[2,3,4,5,6,7,11,14]
+minterms=[2,3,4,5,6,7,11,14]
 
-#dont_cares=[9,10,13,15]
+dont_cares=[9,10,13,15]
 
 
 
