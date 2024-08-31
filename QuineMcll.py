@@ -214,16 +214,96 @@ def Essential_prime_implicants(list,binaryList):
         final = final[:-1]   
         
         
-    return final,del_cols;     
+    return final,del_cols;   
 
+
+#####COL dominace#######
+def check_cols(final_grid,i,j):
+    cou1_i=0
+    cou1_j=0
+    max_col_pre=True
+    for k in range (len(final_grid)):
+        grid=final_grid[k]['Grid']
+        if((grid[j]==1 and grid[i]!=1)):
+            max_col_pre=False
+        else:
+            if(grid[i]==1):cou1_i+=1
+            if(grid[j]==1):cou1_j+=1
+    max_one_col=0;        
+    if(cou1_i==0 or cou1_j==0):max_col_pre=False
+    if(cou1_i>=cou1_j):max_one_col=i
+    else:max_one_col=j
+    return max_one_col,max_col_pre
+    
+
+def ColumnDominance(final_grid):
+    i=0
+    n=len(final_grid[0]['Grid'])
+    while(i<n):
+        j=0
+        while(j<n):
+            if(j==i):
+                j+=1
+                continue
+            max_one_col,max_col_pre=check_cols(final_grid,i,j)
+            if(max_col_pre):
+                k=max_one_col
+                for l in range(len(final_grid)):
+                    col=final_grid[l]['Grid']
+                    col[k]=0
+                        
+            j+=1              
+        i+=1
+
+    
+  
+#####Row dominace#######
+def check_rows(final_grid,i,j):
+    cou1_i=0
+    cou1_j=0
+    min_row_pre=True
+    for k in range (len(final_grid[0]['Grid'])):
+        grid1=final_grid[i]['Grid']
+        grid2=final_grid[j]['Grid']
+        if(grid1[k]==1 and grid2[k]!=1):
+            min_row_pre=False
+        else:
+            if(grid1[k]==1):cou1_i+=1
+            if(grid2[k]==1):cou1_j+=1
+    min_one_row=0;        
+    if(cou1_i==0 or cou1_j==0):min_row_pre=False
+    if(cou1_i<=cou1_j):min_one_row=i
+    else:min_one_row=j
+    return min_one_row,min_row_pre
+
+def RowDominance(final_grid):
+    i=0
+    n=len(final_grid)
+    while(i<n):
+        j=0
+        while(j<n):
+            if(j==i):
+                j+=1
+                continue
+            min_one_row,min_row_pre=check_rows(final_grid,i,j)
+            if(min_row_pre):
+                k=min_one_row
+                final_grid[k]['Grid'].fill(0)
+                       
+            j+=1              
+        i+=1
+        
                                             #Main code for Exicution#
                                             
                                             
 
 minterms=[1,2,3,5,7,8,9]
 dont_cares=[12,14]
-'''minterms=[4,5,6,13,14,15]
-dont_cares=[8,9,10]'''
+#minterms=[4,5,6,13,14,15]
+#minterms=[2,3,4,5,6,7,11,14]
+
+#dont_cares=[9,10,13,15]
+
 
 
 
@@ -354,5 +434,87 @@ print("--------------------------------------------------")
 if(len(epi)!=0):
     print("The essential prime Implicants are->",epi) 
 else:
-    print("No essential prime Implicants Exists.",epi) 
- 
+    print("No essential prime Implicants Exists.") 
+print(" ")
+
+
+print("After deliting the essential prime implicants------>")
+
+print("   ")
+
+max_minterms_length = max(len(str(final_grid_dic[i]['Minterms'])) for i in range(len(final_grid_dic)))
+minterms_column_width = max_minterms_length + 5
+
+max_grid_length = max(len(str(final_grid_dic[i]['Grid'])) for i in range(len(final_grid_dic)))
+grid_column_width = max_grid_length + 5
+
+for i in range(len(final_grid_dic)):
+    print(f"MINTERMS: {str(final_grid_dic[i]['Minterms']).ljust(minterms_column_width)} GRID-> {str(final_grid_dic[i]['Grid']).ljust(grid_column_width)}")
+print(" ")
+#################### COLUMN Dominance ##########
+
+ColumnDominance(final_grid_dic);    
+
+print("Now After checking the COLUMN Dominance The Matrix becomes----------------")
+
+print("  ")
+# Calculate column widths based on the longest string representations of Minterms and Grid
+max_minterms_length = max(len(str(final_grid_dic[i]['Minterms'])) for i in range(len(final_grid_dic)))
+minterms_column_width = max_minterms_length + 5
+
+# Determine the number of columns in the grid
+num_grid_columns = len(final_grid_dic[0]['Grid'])
+grid_column_width = 3 * num_grid_columns + 5
+
+# Create header and subheader strings
+header = f"{'MINTERMS'.ljust(minterms_column_width)} | {'GRID'.ljust(grid_column_width)}"
+subheader = f"{''.ljust(minterms_column_width)} | {'  '.join(f'{i}'.center(3) for i in range(len(minterms)))}"
+
+# Print the main header and subheader with separators
+separator = '-' * len(header)
+print(header)
+print(subheader)
+print(separator)
+
+# Loop through the dictionary to print each row with formatted columns
+for i in range(len(final_grid_dic)):
+    # Convert Grid: Replace 1 with 'X', keep other values as empty spaces
+    grid = final_grid_dic[i]['Grid']
+    # Map '1' to 'X' and leave '0' as spaces
+    grid_str = ' '.join(['X' if x == 1 else ' ' for x in grid])
+
+    # Print the formatted table row with column separators
+    print(f"{str(final_grid_dic[i]['Minterms']).ljust(minterms_column_width)} | {grid_str.ljust(grid_column_width)}")
+
+    # Print a line separator after each row
+    print(separator)
+    
+    
+RowDominance(final_grid_dic)
+print(" ")
+print("Now After checking the ROW Dominance The Matrix becomes----------------")
+
+print("  ")
+max_minterms_length = max(len(str(final_grid_dic[i]['Minterms'])) for i in range(len(final_grid_dic)))
+minterms_column_width = max_minterms_length + 5
+
+max_grid_length = max(len(str(final_grid_dic[i]['Grid'])) for i in range(len(final_grid_dic)))
+grid_column_width = max_grid_length + 5
+
+for i in range(len(final_grid_dic)):
+    print(f"MINTERMS: {str(final_grid_dic[i]['Minterms']).ljust(minterms_column_width)} GRID-> {str(final_grid_dic[i]['Grid']).ljust(grid_column_width)}")
+
+
+finalAns_str="";
+for i in range (len(final_grid_dic)):
+    minterm=final_grid_dic[i]['Minterms']
+    grid=final_grid_dic[i]['Grid']
+    if(  np.sum(grid == 1)!=0):
+        finalAns_str+=finalStringGenarator(minterm,list)+"+"
+        
+     
+        
+print("   ")
+print("The final minimized answer is->>>",finalAns_str+epi);   
+print("   ")
+            
