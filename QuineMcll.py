@@ -294,20 +294,37 @@ def RowDominance(final_grid):
         i+=1
         
                                             #Main code for Exicution#
-                                            
-                                            
 
-#minterms=[1,2,3,5,7,8,9]
-#dont_cares=[12,14]
-#minterms=[4,5,6,13,14,15]
-minterms=[2,3,4,5,6,7,11,14]
+                                
+# Input for the number of variables
+x = int(input("How many variables do you want? -> "))
 
-dont_cares=[9,10,13,15]
+print("\nGive the minterms--->")
 
+power = pow(2, x)  # Calculate the power of 2 raised to the number of variables
+
+# Input for the minterms (all at once, separated by spaces)
+minterms = list(map(int, input("Enter the minterms separated by spaces -> ").split()))
+
+# Validate the minterms
+minterms = [m for m in minterms if 0 <= m < power]  # Keep only valid minterms within the range
+
+print("\nGive the don't cares--->")
+
+# Input for the don't cares (all at once, separated by spaces)
+dont_cares = list(map(int, input("Enter the don't cares separated by spaces -> ").split()))
+
+# Validate the don't cares
+dont_cares = [d for d in dont_cares if 0 <= d < power]  # Keep only valid don't cares within the range
+
+# Print the final lists
+print("\nMinterms:", minterms)
+print("Don't Cares:", dont_cares)
 
 
 
 print("Minterms->",str(minterms).ljust(5)+"     "+"DONT'CARES->",str(dont_cares).ljust(5))
+
 minterms=minterms+dont_cares
 
 minterms.sort()
@@ -414,14 +431,41 @@ print("------------------------------->>>>>")
 
 epi,del_col=Essential_prime_implicants(final_grid_dic,list)
 
+print("  ")
+
+# Calculate column widths based on the longest string representations of Minterms and Grid
 max_minterms_length = max(len(str(final_grid_dic[i]['Minterms'])) for i in range(len(final_grid_dic)))
-minterms_column_width = max_minterms_length + 5
+minterms_column_width = max_minterms_length 
 
-max_grid_length = max(len(str(final_grid_dic[i]['Grid'])) for i in range(len(final_grid_dic)))
-grid_column_width = max_grid_length + 5
+# Determine the number of columns in the grid
+num_grid_columns = len(final_grid_dic[0]['Grid'])
+grid_column_width = 3 * num_grid_columns + 5
 
+# Creating header and subheader strings
+header = f"{'MINTERMS'.ljust(minterms_column_width)} | {'GRID'.ljust(grid_column_width)}"
+subheader = f"{' '.ljust(minterms_column_width)} | {'  '.join(f'{i}'.center(0) for i in range(num_grid_columns))}"
+
+# Print the main header and subheader with separators
+separator = '-' * len(header)
+print(header)
+print(subheader)
+print(separator)
+
+# Loop through the dictionary to print each row with formatted columns
 for i in range(len(final_grid_dic)):
-    print(f"MINTERMS: {str(final_grid_dic[i]['Minterms']).ljust(minterms_column_width)} GRID-> {str(final_grid_dic[i]['Grid']).ljust(grid_column_width)}")
+    # Extract Minterms and Grid values for each entry
+    minterms = final_grid_dic[i]['Minterms']
+    grid = final_grid_dic[i]['Grid']
+    
+    # Convert Grid: Replace 1 with 'X', keep other values as empty spaces
+    grid_str = '  '.join(['X' if x == 1 else ' ' for x in grid])
+
+    # Print the formatted table row with column separators
+    print(f"{str(minterms).ljust(minterms_column_width)} | {grid_str.ljust(grid_column_width)}")
+
+    # Print a line separator after each row
+    print(separator)
+    
     
 
 #####Fill the remaining prime implicants with all zeroes####
@@ -442,33 +486,19 @@ print("After deliting the essential prime implicants------>")
 
 print("   ")
 
-max_minterms_length = max(len(str(final_grid_dic[i]['Minterms'])) for i in range(len(final_grid_dic)))
-minterms_column_width = max_minterms_length + 5
-
-max_grid_length = max(len(str(final_grid_dic[i]['Grid'])) for i in range(len(final_grid_dic)))
-grid_column_width = max_grid_length + 5
-
-for i in range(len(final_grid_dic)):
-    print(f"MINTERMS: {str(final_grid_dic[i]['Minterms']).ljust(minterms_column_width)} GRID-> {str(final_grid_dic[i]['Grid']).ljust(grid_column_width)}")
-print(" ")
-#################### COLUMN Dominance ##########
-
-ColumnDominance(final_grid_dic);    
-
-print("Now After checking the COLUMN Dominance The Matrix becomes----------------")
-
 print("  ")
+
 # Calculate column widths based on the longest string representations of Minterms and Grid
 max_minterms_length = max(len(str(final_grid_dic[i]['Minterms'])) for i in range(len(final_grid_dic)))
-minterms_column_width = max_minterms_length + 5
+minterms_column_width = max_minterms_length 
 
 # Determine the number of columns in the grid
 num_grid_columns = len(final_grid_dic[0]['Grid'])
 grid_column_width = 3 * num_grid_columns + 5
 
-# Create header and subheader strings
+# Creating header and subheader strings
 header = f"{'MINTERMS'.ljust(minterms_column_width)} | {'GRID'.ljust(grid_column_width)}"
-subheader = f"{''.ljust(minterms_column_width)} | {'  '.join(f'{i}'.center(3) for i in range(len(minterms)))}"
+subheader = f"{' '.ljust(minterms_column_width)} | {'  '.join(f'{i}'.center(0) for i in range(num_grid_columns))}"
 
 # Print the main header and subheader with separators
 separator = '-' * len(header)
@@ -478,13 +508,58 @@ print(separator)
 
 # Loop through the dictionary to print each row with formatted columns
 for i in range(len(final_grid_dic)):
-    # Convert Grid: Replace 1 with 'X', keep other values as empty spaces
+    # Extract Minterms and Grid values for each entry
+    minterms = final_grid_dic[i]['Minterms']
     grid = final_grid_dic[i]['Grid']
-    # Map '1' to 'X' and leave '0' as spaces
-    grid_str = ' '.join(['X' if x == 1 else ' ' for x in grid])
+    
+    # Convert Grid: Replace 1 with 'X', keep other values as empty spaces
+    grid_str = '  '.join(['X' if x == 1 else ' ' for x in grid])
 
     # Print the formatted table row with column separators
-    print(f"{str(final_grid_dic[i]['Minterms']).ljust(minterms_column_width)} | {grid_str.ljust(grid_column_width)}")
+    print(f"{str(minterms).ljust(minterms_column_width)} | {grid_str.ljust(grid_column_width)}")
+
+    # Print a line separator after each row
+    print(separator)
+    
+#################### COLUMN Dominance ##########
+
+ColumnDominance(final_grid_dic);    
+
+print("Now After checking the COLUMN Dominance The Matrix becomes----------------")
+
+print("  ")
+
+print("  ")
+
+# Calculate column widths based on the longest string representations of Minterms and Grid
+max_minterms_length = max(len(str(final_grid_dic[i]['Minterms'])) for i in range(len(final_grid_dic)))
+minterms_column_width = max_minterms_length 
+
+# Determine the number of columns in the grid
+num_grid_columns = len(final_grid_dic[0]['Grid'])
+grid_column_width = 3 * num_grid_columns + 5
+
+# Creating header and subheader strings
+header = f"{'MINTERMS'.ljust(minterms_column_width)} | {'GRID'.ljust(grid_column_width)}"
+subheader = f"{' '.ljust(minterms_column_width)} | {'  '.join(f'{i}'.center(0) for i in range(num_grid_columns))}"
+
+# Print the main header and subheader with separators
+separator = '-' * len(header)
+print(header)
+print(subheader)
+print(separator)
+
+# Loop through the dictionary to print each row with formatted columns
+for i in range(len(final_grid_dic)):
+    # Extract Minterms and Grid values for each entry
+    minterms = final_grid_dic[i]['Minterms']
+    grid = final_grid_dic[i]['Grid']
+    
+    # Convert Grid: Replace 1 with 'X', keep other values as empty spaces
+    grid_str = '  '.join(['X' if x == 1 else ' ' for x in grid])
+
+    # Print the formatted table row with column separators
+    print(f"{str(minterms).ljust(minterms_column_width)} | {grid_str.ljust(grid_column_width)}")
 
     # Print a line separator after each row
     print(separator)
@@ -495,14 +570,40 @@ print(" ")
 print("Now After checking the ROW Dominance The Matrix becomes----------------")
 
 print("  ")
+
+# Calculate column widths based on the longest string representations of Minterms and Grid
 max_minterms_length = max(len(str(final_grid_dic[i]['Minterms'])) for i in range(len(final_grid_dic)))
-minterms_column_width = max_minterms_length + 5
+minterms_column_width = max_minterms_length 
 
-max_grid_length = max(len(str(final_grid_dic[i]['Grid'])) for i in range(len(final_grid_dic)))
-grid_column_width = max_grid_length + 5
+# Determine the number of columns in the grid
+num_grid_columns = len(final_grid_dic[0]['Grid'])
+grid_column_width = 3 * num_grid_columns + 5
 
+# Creating header and subheader strings
+header = f"{'MINTERMS'.ljust(minterms_column_width)} | {'GRID'.ljust(grid_column_width)}"
+subheader = f"{' '.ljust(minterms_column_width)} | {'  '.join(f'{i}'.center(0) for i in range(num_grid_columns))}"
+
+# Print the main header and subheader with separators
+separator = '-' * len(header)
+print(header)
+print(subheader)
+print(separator)
+
+# Loop through the dictionary to print each row with formatted columns
 for i in range(len(final_grid_dic)):
-    print(f"MINTERMS: {str(final_grid_dic[i]['Minterms']).ljust(minterms_column_width)} GRID-> {str(final_grid_dic[i]['Grid']).ljust(grid_column_width)}")
+    # Extract Minterms and Grid values for each entry
+    minterms = final_grid_dic[i]['Minterms']
+    grid = final_grid_dic[i]['Grid']
+    
+    # Convert Grid: Replace 1 with 'X', keep other values as empty spaces
+    grid_str = '  '.join(['X' if x == 1 else ' ' for x in grid])
+
+    # Print the formatted table row with column separators
+    print(f"{str(minterms).ljust(minterms_column_width)} | {grid_str.ljust(grid_column_width)}")
+
+    # Print a line separator after each row
+    print(separator)
+    
 
 
 finalAns_str="";
